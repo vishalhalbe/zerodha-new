@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Zerodha Login (All-in-One)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #e0f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      max-width: 500px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      width: 100%;
+    }
+    h2 {
+      color: #0077b6;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    label {
+      margin-top: 1rem;
+      display: block;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.3rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    button {
+      margin-top: 1.5rem;
+      width: 100%;
+      padding: 0.8rem;
+      background: #0077b6;
+      color: white;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .token {
+      margin-top: 1rem;
+      color: green;
+      font-weight: bold;
+    }
+    .status {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #f1f1f1;
+      border-left: 5px solid #2196F3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🔐 Zerodha Login</h2>
+    <label for="apiKey">API Key</label>
+    <input type="text" id="apiKey" placeholder="Enter API Key" />
+    <label for="apiSecret">API Secret</label>
+    <input type="password" id="apiSecret" placeholder="Enter API Secret" />
+    <button onclick="startZerodhaLogin()">Login with Zerodha</button>
+    <div class="token" id="tokenDisplay"></div>
+    <div class="status" id="statusBox" style="display:none;"></div>
+  </div>
+
+  <script>
+    function startZerodhaLogin() {
+      const apiKey = document.getElementById("apiKey").value;
+      const apiSecret = document.getElementById("apiSecret").value;
+      if (!apiKey || !apiSecret) {
+        alert("Please enter both API Key and Secret.");
+        return;
+      }
+      sessionStorage.setItem("ZERODHA_API_KEY", apiKey);
+      sessionStorage.setItem("ZERODHA_API_SECRET", apiSecret);
+      const loginUrl = \`https://kite.zerodha.com/connect/login?v=3&api_key=\${apiKey}\`;
+      window.location.href = loginUrl;
+    }
+
+    async function generateChecksum(input) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(input);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    async function exchangeToken(requestToken) {
+      const apiKey = sessionStorage.getItem("ZERODHA_API_KEY");
+      const apiSecret = sessionStorage.getItem("ZERODHA_API_SECRET");
+      const checksum = await generateChecksum(apiKey + requestToken + apiSecret);
+      const statusBox = document.getElementById("statusBox");
+
+      try {
+        const res = await fetch("https://api.kite.trade/session/token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            api_key: apiKey,
+            request_token: requestToken,
+            checksum: checksum
+          })
+        });
+
+        const data = await res.json();
+        statusBox.style.display = "block";
+        if (data.status === "success") {
+          statusBox.innerText = "✅ Access Token: " + data.data.access_token;
+        } else {
+          statusBox.innerText = "❌ Error: " + (data.message || "Unknown error");
+        }
+      } catch (err) {
+        statusBox.style.display = "block";
+        statusBox.innerText = "❌ Network Error: " + err.message;
+      }
+    }
+
+    window.onload = () => {
+      const requestToken = new URLSearchParams(window.location.search).get("request_token");
+      if (requestToken) {
+        document.getElementById("tokenDisplay").innerText = "Request Token: " + requestToken;
+        exchangeToken(requestToken);
+      }
+    };
+  </script>
+</body>
+</html>
