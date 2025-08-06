@@ -25,7 +25,17 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (response.ok) {
-      res.status(200).json({ status: "success", data });
+    
+
+res.status(200).json({
+  status: "success",
+  access_token: data.access_token,
+  user_id: data.user_id,
+  login_time: data.login_time,
+  data  // optional: preserve full response
+});
+
+      
     } else {
       res.status(400).json({ status: "error", message: data.message || "Unknown error" });
     }
