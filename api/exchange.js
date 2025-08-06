@@ -32,7 +32,7 @@ res.status(200).json({
   access_token: data.data.access_token,
   user_id: data.data.user_id,
   login_time: data.data.login_time,
-  data  // optional: preserve full response
+ // data  // optional: preserve full response
 });
 
       
