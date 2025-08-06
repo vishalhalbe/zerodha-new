@@ -122,6 +122,8 @@
         statusBox.style.display = "block";
         if (data.status === "success" && data.data.access_token != "") {
           statusBox.innerText = "✅ Access Token: " + data.data.access_token;
+           console.log(statusBox.innerText);
+
         } else {
           statusBox.innerText = "❌ Error: " + (data.message || "Unknown error");
         }
