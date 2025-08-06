@@ -120,8 +120,8 @@
         console.log('Zerodha raw response:', data);
 
         statusBox.style.display = "block";
-        if (data.status === "success" && data.data.access_token) {
-          statusBox.innerText = "✅ Access Token: " + data.data.access_token;
+        if (data.status === "success" && data.access_token) {
+          statusBox.innerText = "✅ Access Token: " + data.access_token;
            console.log(statusBox.innerText);
 
         } else {
