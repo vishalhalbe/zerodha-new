@@ -30,8 +30,8 @@ export default async function handler(req, res) {
 res.status(200).json({
   status: "success",
   access_token: data.data.access_token,
-  //user_id: data.user_id,
-  //login_time: data.login_time,
+  user_id: data.data.user_id,
+  login_time: data.data.login_time,
   //data  // optional: preserve full response
 });
 
