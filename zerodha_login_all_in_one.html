@@ -106,7 +106,7 @@
       const statusBox = document.getElementById("statusBox");
 
       try {
-        const res = await fetch("https://kite.zerodha.com/session/token", {
+        const res = await fetch("/api/exchange", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
