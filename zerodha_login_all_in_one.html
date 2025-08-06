@@ -118,7 +118,7 @@
 
         const data = await res.json();
         statusBox.style.display = "block";
-        if (data.status === "success") {
+        if (data.status === "success" && data.data.access_token) {
           statusBox.innerText = "✅ Access Token: " + data.data.access_token;
         } else {
           statusBox.innerText = "❌ Error: " + (data.message || "Unknown error");
