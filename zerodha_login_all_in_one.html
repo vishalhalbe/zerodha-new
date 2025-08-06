@@ -117,7 +117,7 @@
         });
 
         const data = await res.json();
-        console.log('Zerodha raw response:', data);
+        console.log('Zerodha raw response:', data.data);
 
         statusBox.style.display = "block";
         if (data.status === "success" && data.data.access_token) {
