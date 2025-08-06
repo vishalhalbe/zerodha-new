@@ -72,7 +72,7 @@
     <input type="text" id="apiKey" placeholder="Enter API Key" />
     <label for="apiSecret">API Secret</label>
     <input type="password" id="apiSecret" placeholder="Enter API Secret" />
-    <button onclick="startZerodhaLogin()">Login with Zerodha</button>
+    <button id="loginBtn">Login with Zerodha</button>
     <div class="token" id="tokenDisplay"></div>
     <div class="status" id="statusBox" style="display:none;"></div>
   </div>
@@ -87,7 +87,7 @@
       }
       sessionStorage.setItem("ZERODHA_API_KEY", apiKey);
       sessionStorage.setItem("ZERODHA_API_SECRET", apiSecret);
-      const loginUrl = \`https://kite.zerodha.com/connect/login?v=3&api_key=\${apiKey}\`;
+      const loginUrl = `https://kite.zerodha.com/connect/login?v=3&api_key=${apiKey}`;
       window.location.href = loginUrl;
     }
 
@@ -130,6 +130,8 @@
     }
 
     window.onload = () => {
+      document.getElementById("loginBtn").onclick = startZerodhaLogin;
+
       const requestToken = new URLSearchParams(window.location.search).get("request_token");
       if (requestToken) {
         document.getElementById("tokenDisplay").innerText = "Request Token: " + requestToken;
